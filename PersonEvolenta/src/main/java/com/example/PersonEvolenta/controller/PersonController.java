@@ -4,6 +4,7 @@ import com.example.PersonEvolenta.model.Person;
 import com.example.PersonEvolenta.model.Weather;
 import com.example.PersonEvolenta.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +18,19 @@ public class PersonController {
 
     @Autowired
     private PersonRepository repository;
-    private RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${url}")
+    private String urlLocation;
 
     @GetMapping("{id}/weather")
     public ResponseEntity<Weather> getWeather(@PathVariable int id) {
         if (repository.existsById(id)) {
             String location = repository.findById(id).get().getLocation();
-            Weather weather = restTemplate.getForObject("http://localhost:8083/weather?location=" + location, Weather.class);
+            String url = String.format("http://%s/weather?location=" + location, urlLocation);
+            Weather weather = restTemplate.getForObject(url, Weather.class);
             return new ResponseEntity(weather, HttpStatus.OK);
         }
         return new ResponseEntity(null, HttpStatus.NOT_FOUND);
