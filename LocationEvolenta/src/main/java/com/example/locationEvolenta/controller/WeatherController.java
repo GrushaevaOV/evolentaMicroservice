@@ -3,36 +3,27 @@ package com.example.locationEvolenta.controller;
 
 import com.example.locationEvolenta.model.Geodata;
 import com.example.locationEvolenta.model.Weather;
-import com.example.locationEvolenta.repository.GeodataRepository;
+import com.example.locationEvolenta.service.GeodataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
 
 @RestController
 public class WeatherController {
 
     @Autowired
-    private GeodataRepository repository;
+    private RestTemplate restTemplate;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private GeodataService geodataService;
 
     @GetMapping("/weather")
     public Weather redirectRequestWeather(@RequestParam String location) {
-        Geodata geodata = repository.findByName(location).get();
-        String url = String.format("http://localhost:8082/?lat=%s&lon=%s", geodata.getLat(), geodata.getLon());
+        Geodata geodata = geodataService.getLocation(location).get();
+        String url = String.format("http://localhost:8082/?lat=%s&lon=%s", geodata.getLat(),geodata.getLon());
         return restTemplate.getForObject(url, Weather.class);
-    }
-
-    @GetMapping
-    public Optional<Geodata> getWeather(@RequestParam String location) {
-        return repository.findByName(location);
-    }
-
-    @PostMapping
-    public Geodata save(@RequestBody Geodata geodata) {
-        return repository.save(geodata);
     }
 
 }
