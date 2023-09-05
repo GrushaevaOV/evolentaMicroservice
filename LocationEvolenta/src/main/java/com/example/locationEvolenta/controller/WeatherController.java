@@ -26,7 +26,7 @@ public class WeatherController {
     @GetMapping("/weather")
     public Weather redirectRequestWeather(@RequestParam String location) {
         Geodata geodata = geodataService.getLocation(location).get();
-        String url = String.format("http://%s/?lat=%s&lon=%s", weatherUrl, geodata.getLat(), geodata.getLon());
+        String url = String.format("http://%s/?lat=%s&lon=%s",weatherUrl, geodata.getLat(), geodata.getLon());
         return restTemplate.getForObject(url, Weather.class);
     }
 
