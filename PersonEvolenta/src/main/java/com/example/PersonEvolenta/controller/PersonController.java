@@ -53,12 +53,17 @@ public class PersonController {
                 : new ResponseEntity(repository.save(person), HttpStatus.CREATED);
     }
 
-     @PutMapping("/{id}")
-     public Person update(@PathVariable int id,@RequestBody Person person) {
-         Optional<Person> foundPerson = repository.findById(id);
-         if (foundPerson.isPresent()) {
-             person.setId(id);
-         }
-         return repository.save(person);
-     }
+    @PutMapping("/{id}")
+    public Person update(@PathVariable int id, @RequestBody Person person) {
+        Optional<Person> foundPerson = repository.findById(id);
+        if (foundPerson.isPresent()) {
+            person.setId(id);
+        }
+        return repository.save(person);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        repository.deleteById(id);
+    }
 }
